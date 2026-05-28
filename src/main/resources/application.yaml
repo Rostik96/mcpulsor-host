@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: mcpulsor-host
+  ai:
+    ollama:
+      chat:
+        model: ${SPRING_AI_OLLAMA_CHAT_MODEL:gemma3:4b-it-q4_K_M}
+        temperature: ${SPRING_AI_OLLAMA_CHAT_TEMPERATURE:0.1}
+        top-k: ${SPRING_AI_OLLAMA_CHAT_TOP_K:10}
+        top-p: ${SPRING_AI_OLLAMA_CHAT_TOP_P:0.95}
+        repeat-penalty: ${SPRING_AI_OLLAMA_CHAT_REPEAT_PENALTY:1.0}
+mcp-client:
+  base-uri: ${MCP_CLIENT_BASE_URI:http://localhost:8090}
+  endpoint: ${MCP_CLIENT_ENDPOINT:/mcpulsor}
