@@ -7,7 +7,6 @@ import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -32,12 +31,11 @@ class ToolsTemplate {
                     Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 
-    Optional<String> callTools(AssistantMessage message) {
-        var text = message.getText();
-        if (!toolCallPattern.matcher(text).find())
-            return Optional.empty();
-        log.info("Host говорит: модель просит вызвать tool:\n{}", text);
-        var response = mcpSyncClient.callTool(extractTool(text)).content().stream()
+    Optional<String> callTools(String message) {
+        var matcher = toolCallPattern.matcher(message);
+        if (!matcher.find()) return Optional.empty();
+        log.info("Host говорит: модель просит вызвать tool:\n{}", message);
+        var response = mcpSyncClient.callTool(extractTool(matcher.group(1))).content().stream()
                 .map("<tool_response>%n%s%n</tool_response>"::formatted)
                 .collect(joining(lineSeparator()));
         log.info("Host говорит: вот что принес клиента от сервера, по просьбе модели:\n{}", response);
@@ -45,12 +43,9 @@ class ToolsTemplate {
     }
 
 
-    @SneakyThrows
-    private McpSchema.CallToolRequest extractTool(String modelAnswer) {
-        var matcher = toolCallPattern.matcher(modelAnswer);
-        matcher.find();
-        var toolCallRequestJson = matcher.group(1).trim();
-        var tool = mapper.readTree(toolCallRequestJson);
+      @SneakyThrows
+    private McpSchema.CallToolRequest extractTool(String toolCallRequestJson) {
+        var tool = mapper.readTree(toolCallRequestJson.trim());
         return McpSchema.CallToolRequest.builder()
                 .name(tool.path("name").asText())
                 .arguments(mapper.convertValue(tool.path("parameters"), Map.class))
