@@ -34,16 +34,16 @@ class ToolsTemplate {
     Optional<String> callTools(String message) {
         var matcher = toolCallPattern.matcher(message);
         if (!matcher.find()) return Optional.empty();
-        log.info("Host говорит: модель просит вызвать tool:\n{}", message);
+        log.info("The model asks you to call the tool:\n{}", message);
         var response = mcpSyncClient.callTool(extractTool(matcher.group(1))).content().stream()
                 .map("<tool_response>%n%s%n</tool_response>"::formatted)
                 .collect(joining(lineSeparator()));
-        log.info("Host говорит: вот что принес клиента от сервера, по просьбе модели:\n{}", response);
+        log.info("MCP server answer:\n{}", response);
         return Optional.of(response);
     }
 
 
-      @SneakyThrows
+    @SneakyThrows
     private McpSchema.CallToolRequest extractTool(String toolCallRequestJson) {
         var tool = mapper.readTree(toolCallRequestJson.trim());
         return McpSchema.CallToolRequest.builder()

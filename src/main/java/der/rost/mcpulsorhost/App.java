@@ -17,9 +17,9 @@ class App {
 	@Bean
 	ApplicationListener<ApplicationReadyEvent> onStartup(Host host) {
 	    return _ -> {
-			var firstQuestion = "какой у меня пульс?";
+			var firstQuestion = "какой у меня пульс за последние 6 дней?";
 			var secondQuestion = "как дела?";
-			var thirdQuestion = "какой у меня будет пульс если к нему прибавить 1000?";
+			var thirdQuestion = "какой у меня будет пульс за последние 10 дней если к нему прибавить 1000?";
 			host.printAnswerToUser(firstQuestion);
 			host.printAnswerToUser(secondQuestion);
 			host.printAnswerToUser(thirdQuestion);

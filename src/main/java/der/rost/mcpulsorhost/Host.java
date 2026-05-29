@@ -28,16 +28,16 @@ public class Host {
 
 
     public void printAnswerToUser(String question) {
-        log.info("Host говорит, что пользователь задал вот  такой вопрос: {}", question);
+        log.info("User question: {}", question);
         var questionResponse = chatClient.prompt().user(question).call().chatResponse().ofNullable()
                 .map(ModelResponse::getResult)
                 .map(ModelResult::getOutput)
                 .map(Message::getText)
                 .orElse(EMPTY);
-        log.info("Первичный ответ модели:\n{}", questionResponse);
+        log.info("First model response:\n{}", questionResponse);
         toolsTemplate.callTools(questionResponse)
                 .ifPresent(toolResult ->
-                        log.info("Итоговый ответ от модели:\n{}", chatClient.prompt()
+                        log.info("Final model answer:\n{}", chatClient.prompt()
                                 .messages(List.of(
                                         new UserMessage(question),
                                         new AssistantMessage(questionResponse),

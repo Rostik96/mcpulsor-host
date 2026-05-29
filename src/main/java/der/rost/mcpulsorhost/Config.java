@@ -30,8 +30,7 @@ class Config {
                           @Value("system-prompt.txt") ClassPathResource systemPrompt,
                           ToolsTemplate toolsTemplate) {
         return builder
-                .defaultSystem(prompt ->
-                        prompt
+                .defaultSystem(prompt -> prompt
                                 .text(systemPrompt)
                                 .param("tools", toolsTemplate.listTools()))
                 .build();
